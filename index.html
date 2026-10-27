@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mantuni — El mantenimiento de su empresa, en orden</title>
+<meta name="description" content="Quien reporta lo hace en su idioma y sin pensar. Quien arregla sabe qué hacer y con qué. Y el jefe ve todo sin preguntarle a nadie.">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+  :root{--bg:#07070b;--text:#f5f5f7;--muted:#9a9aa2;--verde:#1a6b54;--verde-brillo:#2dd4a8;}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;overflow-x:clip}
+  @supports not (overflow-x: clip){body{overflow-x:hidden}}
+  h1,h2{line-height:1.04;letter-spacing:-.035em;font-weight:600}
+  a{color:inherit;text-decoration:none}
+  .nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:space-between;padding:18px 5vw;background:linear-gradient(to bottom,rgba(7,7,11,.85),transparent);pointer-events:none}
+  .nav>*{pointer-events:auto}
+  .nav .brand{font-weight:600;font-size:20px;letter-spacing:-.02em}
+  .nav .brand span{color:var(--verde-brillo)}
+  .nav-links{display:flex;gap:22px;align-items:center;font-size:14px;color:var(--muted)}
+  .nav-links a:hover{color:var(--text)}
+  .nav .cta{font-size:14px;font-weight:500;padding:9px 18px;border-radius:980px;background:var(--verde-brillo);color:#04120d;transition:transform .2s,box-shadow .2s}
+  .nav .cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(45,212,168,.3)}
+  .eyebrow{font-size:14px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-brillo);margin-bottom:20px}
+  .btn{display:inline-flex;align-items:center;gap:10px;margin-top:36px;padding:15px 30px;border-radius:980px;background:var(--verde-brillo);color:#04120d;font-weight:600;font-size:16px;transition:transform .2s,box-shadow .2s;width:fit-content}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(45,212,168,.35)}
+  .scroll-scene{position:relative}
+  .scroll-scene.hero{height:240vh}
+  .scroll-scene.tecnico{height:380vh}
+  .scroll-scene.panel{height:240vh}
+  .scroll-scene .sticky{position:sticky;top:0;height:100vh;background-size:cover;background-position:center;background-repeat:no-repeat}
+  @supports (height: 100svh){.scroll-scene .sticky{height:100svh}}
+  .scroll-scene .scene-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .scroll-scene .overlay{position:absolute;inset:0}
+  .scroll-scene.hero .overlay{background:linear-gradient(to bottom,rgba(7,7,11,.35) 0%,rgba(7,7,11,.55) 50%,rgba(7,7,11,.92) 100%)}
+  .scroll-scene.tecnico .overlay{background:linear-gradient(to bottom,rgba(7,7,11,.55) 0%,rgba(7,7,11,.25) 40%,rgba(7,7,11,.75) 100%)}
+  .scroll-scene.panel .overlay{background:linear-gradient(to right,rgba(7,7,11,.9) 0%,rgba(7,7,11,.45) 55%,rgba(7,7,11,.2) 100%)}
+  .scene-content{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:0 8vw;max-width:1050px}
+  .scroll-scene.hero h1{font-size:clamp(2.6rem,6.5vw,5.5rem);max-width:14ch;text-shadow:0 4px 30px rgba(0,0,0,.5)}
+  .scroll-scene.hero p{font-size:clamp(1.1rem,2.2vw,1.5rem);color:#d8d8de;max-width:46ch;margin-top:24px;line-height:1.5;text-shadow:0 2px 16px rgba(0,0,0,.6)}
+  .scroll-scene.panel h2{font-size:clamp(2.2rem,5.5vw,4.2rem);max-width:15ch;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+  .scroll-scene.panel p{font-size:clamp(1.05rem,2vw,1.35rem);color:#d8d8de;max-width:42ch;margin-top:22px;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+  .sellos{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:26px;list-style:none;font-size:13px;color:#c9c9d0}
+  .sellos li::before{content:"·";color:var(--verde-brillo);margin-right:8px}
+  .texts{position:absolute;inset:0;z-index:2}
+  .texts .t{position:absolute;left:8vw;right:8vw;max-width:720px;opacity:0;transform:translateY(28px);transition:opacity .5s cubic-bezier(.16,1,.3,1),transform .5s cubic-bezier(.16,1,.3,1);pointer-events:none}
+  .texts .t.show{opacity:1;transform:none}
+  .texts .t .k{display:block;font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--verde-brillo);margin-bottom:14px}
+  .texts .t h2{font-size:clamp(2rem,4.6vw,3.6rem);max-width:15ch;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+  .texts .t p{font-size:clamp(1rem,1.7vw,1.25rem);color:#d8d8de;margin-top:16px;max-width:42ch;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+  .texts .t:nth-child(1){top:26%}
+  .texts .t:nth-child(2){top:36%}
+  .texts .t:nth-child(3){top:46%}
+  .word{display:inline-block;opacity:0;transform:translateY(60%);animation:wordIn .9s cubic-bezier(.16,1,.3,1) forwards}
+  @keyframes wordIn{to{opacity:1;transform:translateY(0)}}
+  .scroll-cue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase;animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
+  .scroll-cue .line{width:1px;height:36px;background:linear-gradient(to bottom,var(--verde-brillo),transparent)}
+  .bridge{height:60vh;display:flex;align-items:center;justify-content:center;background-size:cover;background-position:center;position:relative;overflow:hidden}
+  .bridge::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(7,7,11,.8),rgba(7,7,11,.55),rgba(7,7,11,.85));z-index:0}
+  .bridge p{position:relative;z-index:1;max-width:20ch;text-align:center;font-size:clamp(1.6rem,3.4vw,2.6rem);font-weight:600;letter-spacing:-.03em;color:var(--text);opacity:.95;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+  .img-scene{position:relative;height:100vh;background-size:cover;background-position:center;overflow:hidden}
+  .img-scene .overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(7,7,11,.9) 0%,rgba(7,7,11,.5) 55%,rgba(7,7,11,.15) 100%)}
+  .img-scene .content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 8vw;max-width:840px}
+  .img-scene h2{font-size:clamp(2.2rem,5.5vw,4.2rem);max-width:15ch;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+  .img-scene p{font-size:clamp(1.05rem,2vw,1.35rem);color:#d8d8de;max-width:42ch;margin-top:22px;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+  .seccion{padding:110px 6vw;max-width:1100px;margin:0 auto}
+  .seccion h2{font-size:clamp(2rem,4.5vw,3.2rem);max-width:20ch;margin-bottom:18px}
+  .seccion p{color:var(--muted);font-size:clamp(1rem,1.8vw,1.2rem);max-width:52ch;line-height:1.55}
+  .pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:44px}
+  .paso b{display:block;font-size:17px;margin-top:14px;line-height:1.35}
+  .paso .n{display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;border-radius:50%;background:rgba(45,212,168,.12);color:var(--verde-brillo);font-weight:700;font-size:15px}
+  .precio{border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);padding:90px 6vw;text-align:center}
+  .precio h2{font-size:clamp(2rem,4.5vw,3.2rem);margin-bottom:18px}
+  .precio p{color:var(--muted);max-width:52ch;margin:0 auto;font-size:clamp(1rem,1.8vw,1.2rem);line-height:1.55}
+  .precio .btn{margin:32px auto 0}
+  .cierre{min-height:90vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:80px 6vw;background:radial-gradient(circle at 50% 30%,rgba(26,107,84,.25),transparent 60%)}
+  .cierre h2{font-size:clamp(2.6rem,6.5vw,5rem);max-width:16ch;margin-bottom:20px;text-shadow:0 4px 30px rgba(0,0,0,.4)}
+  .cierre p{color:var(--muted);font-size:clamp(1.1rem,2vw,1.35rem);max-width:40ch;margin-bottom:38px}
+  footer{padding:40px 5vw;border-top:1px solid rgba(255,255,255,.07);color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;background:var(--bg)}
+  footer a:hover{color:var(--text)}
+  @media(max-width:700px){
+    .scene-content,.img-scene .content{padding:0 6vw}
+    .texts .t{left:6vw;right:6vw}
+    .texts .t h2{font-size:clamp(1.7rem,7vw,2.6rem)}
+    .nav-links{display:none}
+    .nav .brand{font-size:17px}
+    .pasos{grid-template-columns:1fr;gap:22px}
+    .seccion{padding:80px 6vw}
+  }
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}.reveal,.word{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="brand" href="https://mantuni.com">Mantuni<span>.</span></a>
+  <div class="nav-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#precios">Precio</a>
+    <a href="https://mantuni.com/entrar">Entrar</a>
+  </div>
+  <a class="cta" href="https://mantuni.com/alta">Cree la cuenta</a>
+</nav>
+
+<main>
+  <section class="scroll-scene hero" data-frames="frames_hero">
+    <div class="sticky" style="background-image:url('frames_hero/f000.jpg')">
+      <canvas class="scene-canvas"></canvas>
+      <div class="overlay"></div>
+      <div class="scene-content">
+        <span class="eyebrow reveal">Para empresas de cualquier tamaño y de cualquier país</span>
+        <h1 data-words>El mantenimiento de su empresa, en orden</h1>
+        <p class="reveal">Quien reporta lo hace en su idioma y sin pensar. Quien arregla sabe qué hacer y con qué. Y el jefe ve todo sin preguntarle a nadie.</p>
+        <a class="btn reveal" href="https://mantuni.com/alta">Cree la cuenta de la empresa →</a>
+        <ul class="sellos reveal">
+          <li>10 idiomas</li><li>Sin IA</li><li>Datos suyos</li><li>Funciona en el navegador</li>
+        </ul>
+      </div>
+      <div class="scroll-cue"><span>scroll</span><div class="line"></div></div>
+    </div>
+  </section>
+
+  <div class="bridge" style="background-image:url('img/pasillo.webp')"><p>Del aviso perdido<br>a la orden cerrada.</p></div>
+
+  <section class="scroll-scene tecnico" data-frames="frames">
+    <div class="sticky" style="background-image:url('frames/f000.jpg')">
+      <canvas class="scene-canvas"></canvas>
+      <div class="overlay"></div>
+      <div class="texts">
+        <div class="t" data-at="0.05">
+          <span class="k">Quien reporta</span>
+          <h2>Escanee el código de la zona.</h2>
+          <p>Sin instalar nada y sin crear cuenta. Se abre desde el teléfono de cualquiera.</p>
+        </div>
+        <div class="t" data-at="0.42">
+          <span class="k">Una foto vale más que una llamada</span>
+          <h2>Toque el ícono de lo que pasa.</h2>
+          <p>Quien reporta adjunta la foto del desperfecto desde el mismo QR. Al llegar el técnico ya sabe qué herramientas llevar.</p>
+        </div>
+        <div class="t" data-at="0.78">
+          <span class="k">Cerrada</span>
+          <h2>El técnico la recibe, la cierra, y queda el registro de todo.</h2>
+          <p>Cada orden queda con su foto, su estado y su fecha. Nada depende de la memoria de nadie.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="bridge" style="background-image:url('img/lobby.webp')"><p>Y el jefe<br>lo ve todo.</p></div>
+
+  <section class="img-scene" style="background-image:url('img/qr.webp')">
+    <div class="overlay"></div>
+    <div class="content">
+      <span class="eyebrow reveal">Quien reporta no necesita aprender nada</span>
+      <h2 class="reveal">Un QR en la pared. Una foto. Listo.</h2>
+      <p class="reveal">Pegue una etiqueta con un QR en cada zona. Cualquiera reporta una falla escaneando, en su idioma.</p>
+    </div>
+  </section>
+
+  <section class="scroll-scene panel" data-frames="frames_panel">
+    <div class="sticky" style="background-image:url('frames_panel/f000.jpg')">
+      <canvas class="scene-canvas"></canvas>
+      <div class="overlay"></div>
+      <div class="scene-content">
+        <span class="eyebrow reveal">Para el jefe</span>
+        <h2 class="reveal">Ve todo, sin preguntar a nadie.</h2>
+        <p class="reveal">Ve todas las fallas abiertas, quién las tiene y qué se pagó. Sin cronómetro ni vigilancia.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="img-scene" style="background-image:url('img/tablet.webp')">
+    <div class="overlay"></div>
+    <div class="content">
+      <span class="eyebrow reveal">En la mano</span>
+      <h2 class="reveal">El panel, donde esté.</h2>
+      <p class="reveal">Abra desde el móvil o la tablet y mire exactamente qué falta cerrar.</p>
+    </div>
+  </section>
+
+  <section class="seccion" id="como-funciona">
+    <span class="eyebrow">Cómo funciona</span>
+    <h2>Tres pasos, nada más.</h2>
+    <div class="pasos">
+      <div class="paso"><span class="n">1</span><b>Pegue una etiqueta con un QR en cada zona.</b></div>
+      <div class="paso"><span class="n">2</span><b>Cualquiera reporta una falla escaneando, en su idioma.</b></div>
+      <div class="paso"><span class="n">3</span><b>El técnico la recibe, la cierra, y queda el registro de todo.</b></div>
+    </div>
+  </section>
+
+  <section class="precio" id="precios">
+    <h2>Un precio por empresa, no por área.</h2>
+    <p>79 € al mes o 790 € al año (dos meses gratis). La prueba de 2 meses no pide tarjeta: si no activa el plan, la empresa sigue en el plan gratis con 10 reportes al mes.</p>
+    <a class="btn" href="https://mantuni.com/alta">Cree la cuenta de la empresa →</a>
+  </section>
+
+  <section class="cierre" id="empezar">
+    <h2>¿Quiere probarlo en su empresa?</h2>
+    <p>Dos meses de prueba, sin tarjeta y sin límites. Después 79 € al mes o 790 € al año, con áreas y técnicos ilimitados.</p>
+    <a class="btn" href="https://mantuni.com/alta">Cree la cuenta de la empresa →</a>
+    <a class="btn" style="background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.2);margin-top:14px" href="https://mantuni.com/entrar">Entrar</a>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 Mantuni · Leyser Rosales</span>
+  <span>
+    <a href="https://mantuni.com/privacidad">Privacidad</a> ·
+    <a href="https://mantuni.com/terminos">Términos</a> ·
+    <a href="https://mantuni.com/contenido">Contenido indebido</a> ·
+    <a href="https://mantuni.com/encargo">Encargo</a>
+  </span>
+  <span>mantuni.com</span>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  document.querySelectorAll('[data-words]').forEach(function(el){
+    var words = el.textContent.trim().split(/\s+/);
+    el.textContent = '';
+    words.forEach(function(w,i){
+      var s = document.createElement('span');
+      s.className = 'word'; s.textContent = w;
+      s.style.animationDelay = (i*0.07)+'s';
+      el.appendChild(s);
+      el.appendChild(document.createTextNode(' '));
+    });
+  });
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, {threshold:.2});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  var TOTAL = 80;
+  var scenes = [];
+  document.querySelectorAll('.scroll-scene').forEach(function(scene){
+    var canvas = scene.querySelector('.scene-canvas');
+    if(!canvas) return;
+    var folder = scene.dataset.frames;
+    var texts = scene.querySelectorAll('.texts .t');
+    var s = { el: scene, canvas: canvas, ctx: canvas.getContext('2d'), folder: folder, imgs: [], texts: texts, current: -1 };
+    for(var i=0; i<TOTAL; i++){
+      (function(idx){
+        var img = new Image();
+        img.onload = function(){ if(s.current === idx) drawCover(s, img); };
+        img.src = folder + '/f' + String(idx).padStart(3,'0') + '.jpg';
+        s.imgs.push(img);
+      })(i);
+    }
+    scenes.push(s);
+  });
+
+  function drawCover(s, img){
+    var cw = s.canvas.width, ch = s.canvas.height;
+    var iw = img.naturalWidth, ih = img.naturalHeight;
+    if(!iw || !ih) return;
+    var scale = Math.max(cw/iw, ch/ih);
+    var dw = iw*scale, dh = ih*scale;
+    s.ctx.drawImage(img, (cw-dw)/2, (ch-dh)/2, dw, dh);
+  }
+
+  function sizeAll(){
+    scenes.forEach(function(s){
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var w = Math.max(1, Math.round((s.canvas.offsetWidth || 320) * dpr));
+      var h = Math.max(1, Math.round((s.canvas.offsetHeight || 180) * dpr));
+      if(s.canvas.width !== w || s.canvas.height !== h){
+        s.canvas.width = w; s.canvas.height = h; s.current = -1;
+      }
+    });
+  }
+  sizeAll();
+  window.addEventListener('load', sizeAll);
+  window.addEventListener('resize', sizeAll);
+  window.addEventListener('orientationchange', function(){ setTimeout(sizeAll, 250); });
+
+  if(window.gsap && window.ScrollTrigger){
+    gsap.registerPlugin(ScrollTrigger);
+    scenes.forEach(function(s){
+      ScrollTrigger.create({
+        trigger: s.el,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: true,
+        onUpdate: function(self){
+          var p = self.progress;
+          var f = Math.round(p * (TOTAL - 1));
+          if(f !== s.current){
+            s.current = f;
+            var img = s.imgs[f];
+            if(img && img.complete && img.naturalWidth > 0) drawCover(s, img);
+          }
+          s.texts.forEach(function(t){
+            var at = parseFloat(t.dataset.at || '0');
+            t.classList.toggle('show', Math.abs(p - at) < 0.22);
+          });
+        }
+      });
+      s.current = 0;
+      if(s.imgs[0] && s.imgs[0].complete) drawCover(s, s.imgs[0]);
+      else if(s.imgs[0]) s.imgs[0].onload = function(){ if(s.current === 0) drawCover(s, s.imgs[0]); };
+    });
+    ScrollTrigger.refresh();
+  }
+})();
+</script>
+</body>
+</html>
